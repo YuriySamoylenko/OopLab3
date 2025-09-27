@@ -26,7 +26,7 @@
             this.Address = address;
             this.operatorName = operatorName;
             this.phone = phone;
-            this.cashCapacity = waterCapacity;
+            this.companyName = companyName;
         }
 
         public int WaterCapacityLiters
@@ -36,7 +36,7 @@
             {
                 if (value < 500 || value > 2000)
                 {
-                    throw new ArgumentException("Water capacity Vallue is out of range.");
+                    throw new ArgumentException("Water capacity Value is out of range.");
                 }
 
                 waterCapacityLiters = value;
@@ -120,21 +120,26 @@
                 return waterLeftLiters;
             }
 
-            waterLeftLiters += volume;
+            waterLeftLiters -= volume;
             return volume;
         }
 
         public string Refill(int liters)
         {
+            if (liters + waterLeftLiters > waterCapacityLiters)
+            {
+                throw new ArgumentException();
+            }
+
             waterLeftLiters = waterCapacityLiters;
             state = MachineState.Active;
             refillDate = DateTime.Now;
-            return $"Machine refilled with {waterCapacityLiters} liters";
+            return $"Machine refilled with {liters} liters";
         }
 
         public string Refill()
         {
-            return this.Refill(waterCapacityLiters);
+            return this.Refill(waterCapacityLiters - waterLeftLiters);
         }
 
         public decimal WithdrawCash()

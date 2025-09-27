@@ -10,7 +10,7 @@ bool isRunning = true;
 while (isRunning)
 {
     Console.WriteLine();
-    Console.WriteLine("Menu (2)");
+    Console.WriteLine("Menu (3)");
     Console.WriteLine(@"
 1 – Додати об’єкт
 2 – Переглянути всі об’єкти
@@ -61,23 +61,19 @@ void AddItem()
 3 – Manually enter data partly
 0 – Exit to main menu");
         Console.WriteLine();
-        var findNumber = ReadUserNumber("Enter menu number: ", 0, 2);
+        var findNumber = ReadUserNumber("Enter menu number: ", 0, 3);
         switch (findNumber)
         {
             case 1:
-                var machineDefault = new WaterVendingMachine();
-                machineDefault.Address = "1 floor";
-                machineDefault.OperatorName = "Tom";
-                machineDefault.Phone = "123456";
-                machineDefault.CompanyName = "Aqua";
-                machineDefault.WaterCapacityLiters = 1000;
+                // Usage of constructor
+                var machineDefault = new WaterVendingMachine(1000, "1 floor", "Tom", "123456", "Aqua");
                 database.Add(machineDefault);
                 Display(database);
                 break;
             case 2:
-                var machine = new WaterVendingMachine();
-                // Address is an example of autoproperty
-                machine.Address = ReadUserString("Enter machine address (string length 3 - 20): ", 3, 50);
+                var address = ReadUserString("Enter machine address (string length 3 - 20): ", 3, 50);
+                // Usage of initializator (with default constructor)
+                var machine = new WaterVendingMachine { Address = address };
                 SetStringProperty("Enter operator name (string length 3 - 20): ", (string val) => machine.OperatorName = val);
                 SetStringProperty("Enter operator phone number (digits length 6): ", (string val) => machine.Phone = val);
                 SetStringProperty("Enter operating company name (string length 3 - 20): ", (string val) => machine.CompanyName = val);
@@ -86,8 +82,9 @@ void AddItem()
                 Display(database);
                 break;
             case 3:
-                var machine1 = new WaterVendingMachine();
-                SetNumberProperty("Enter water capacity in liters (number 500 - 2000): ", (int val) => machine1.WaterCapacityLiters = val);
+                var capacity = ReadUserNumber("Enter water capacity in liters (number 500 - 2000): ", 500, 2000);
+                // Usage of overloaded constructor
+                var machine1 = new WaterVendingMachine(capacity);
                 database.Add(machine1);
                 Display(database);
                 break;
@@ -170,77 +167,84 @@ void DemoFull()
 7 - Refill overload
 0 – Exit to main menu");
         Console.WriteLine();
-        var findNumber = ReadUserNumber("Enter menu number: ", 0, 5);
-        switch (findNumber)
+        var findNumber = ReadUserNumber("Enter menu number: ", 0, 7);
+        try
         {
-            case 1:
-                if (machine.WaterLeftLiters == machine.WaterCapacityLiters)
-                {
-                    Console.WriteLine("Machine is full");
-                }
-                else
-                {
-                    Console.WriteLine(machine.Refill());
-                }
-                break;
-            case 2:
-                if (machine.State == MachineState.RequiresMoneyWithraw)
-                {
-                    Console.WriteLine("Macine can't take cash");
-                }
-                else if (machine.State == MachineState.RequiresRefill)
-                {
-                    Console.WriteLine("No water");
-                }
-                else
-                {
-                    var money = ReadUserDecimal("Enter cash: ", 1, machine.GetMoneyCapacity());
-                    Console.WriteLine(machine.PutMoney(money));
-                }
-                break;
-            case 3:
-                if (machine.State == MachineState.RequiresRefill)
-                {
-                    Console.WriteLine("No water");
-                }
-                else
-                {
-                    var water = ReadUserNumber("Enter water amount: ", 1, machine.WaterLeftLiters);
-                    var waterGot = machine.TakeWater(water);
-                    Console.WriteLine($"You got {waterGot} liters of water");
-                }
-                break;
-            case 4:
-                var cash = machine.WithdrawCash();
-                Console.WriteLine($"We earned {cash} money");
-                break;
-            case 5:
-                var address = ReadUserString("Enter new address: ", 3, 50);
-                var moveResult = machine.Move(address);
-                Console.WriteLine(moveResult);
-                break;
-            case 6:
-                Console.WriteLine(machine.WaterSoldLiters);
-                break;
-            case 7:
-                if (machine.WaterLeftLiters == machine.WaterCapacityLiters)
-                {
-                    Console.WriteLine("Machine is full");
-                }
-                else
-                {
-                    var water = ReadUserNumber("Enter water amount: ", 1, machine.WaterSoldLiters);
-                    Console.WriteLine(machine.Refill(water));
-                }
+            switch (findNumber)
+            {
+                case 1:
+                    if (machine.WaterLeftLiters == machine.WaterCapacityLiters)
+                    {
+                        Console.WriteLine("Machine is full");
+                    }
+                    else
+                    {
+                        Console.WriteLine(machine.Refill());
+                    }
+                    break;
+                case 2:
+                    if (machine.State == MachineState.RequiresMoneyWithraw)
+                    {
+                        Console.WriteLine("Macine can't take cash");
+                    }
+                    else if (machine.State == MachineState.RequiresRefill)
+                    {
+                        Console.WriteLine("No water");
+                    }
+                    else
+                    {
+                        var money = ReadUserDecimal("Enter cash: ", 1, machine.GetMoneyCapacity());
+                        Console.WriteLine(machine.PutMoney(money));
+                    }
+                    break;
+                case 3:
+                    if (machine.State == MachineState.RequiresRefill)
+                    {
+                        Console.WriteLine("No water");
+                    }
+                    else
+                    {
+                        var water = ReadUserNumber("Enter water amount: ", 1, machine.WaterLeftLiters);
+                        var waterGot = machine.TakeWater(water);
+                        Console.WriteLine($"You got {waterGot} liters of water");
+                    }
+                    break;
+                case 4:
+                    var cash = machine.WithdrawCash();
+                    Console.WriteLine($"We earned {cash} money");
+                    break;
+                case 5:
+                    var address = ReadUserString("Enter new address: ", 3, 50);
+                    var moveResult = machine.Move(address);
+                    Console.WriteLine(moveResult);
+                    break;
+                case 6:
+                    Console.WriteLine(machine.WaterSoldLiters);
+                    break;
+                case 7:
+                    if (machine.WaterLeftLiters == machine.WaterCapacityLiters)
+                    {
+                        Console.WriteLine("Machine is full");
+                    }
+                    else
+                    {
+                        var water = ReadUserNumber("Enter water amount: ", 1, machine.WaterSoldLiters);
+                        Console.WriteLine(machine.Refill(water));
+                    }
 
-                break;
-            case 0:
-                Console.WriteLine("You selected Option 0. Exiting to main menu.");
-                work = false;
-                break;
-            default:
-                Console.WriteLine("Invalid option. Please enter a number between 0 and 2.");
-                break;
+                    break;
+                case 0:
+                    Console.WriteLine("You selected Option 0. Exiting to main menu.");
+                    work = false;
+                    break;
+                default:
+                    Console.WriteLine("Invalid option. Please enter a number between 0 and 2.");
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
         }
     }
 }
